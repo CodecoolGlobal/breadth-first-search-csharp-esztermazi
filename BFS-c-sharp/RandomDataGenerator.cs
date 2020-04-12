@@ -1,7 +1,7 @@
-﻿using System;
+﻿using BFS_c_sharp.Model;
+using System;
 using System.Collections.Generic;
 using System.Linq;
-using BFS_c_sharp.Model;
 
 namespace BFS_c_sharp
 {
@@ -66,6 +66,7 @@ namespace BFS_c_sharp
 
         public int GetDistanceLevel(UserNode user1, UserNode user2)
         {
+            // Breadth First Search
             var personToView = user1;
             var personToFind = user2;
             Dictionary<UserNode, int> distance = new Dictionary<UserNode, int>();
@@ -76,25 +77,52 @@ namespace BFS_c_sharp
             while (queue.Count > 0 && !distance.ContainsKey(personToFind))
             {
                 personToView = queue.Dequeue();
-                var numberOfelements = personToView.Friends.Count;
-                var FriendList = personToView.Friends;
+                var friendList = personToView.Friends;
 
-                for (int i = 0; i < numberOfelements; i++)
+                foreach (var friend in friendList)
                 {
-                    var friend = FriendList.ElementAt(i);
-
                     if (!distance.ContainsKey(friend))
                     {
                         distance[friend] = distance[personToView] + 1;
                         queue.Enqueue(friend);
                     }
-                
+
                 }
-        
+
             }
             if (!distance.ContainsKey(personToFind)) return -1;
             return distance[user2];
 
+        }
+
+        public HashSet<UserNode> GetFriendsOfLevel(UserNode user1, int distanceLevel)
+        {
+            // Breadth First Search
+            var personToView = user1;
+            Dictionary<UserNode, int> distance = new Dictionary<UserNode, int>();
+            Queue<UserNode> queue = new Queue<UserNode>();
+            HashSet<UserNode> result = new HashSet<UserNode>();
+            distance[personToView] = 0;
+            queue.Enqueue(personToView);
+
+            while (queue.Count > 0)
+            {
+                personToView = queue.Dequeue();
+                var friendList = personToView.Friends;
+
+                foreach (var friend in friendList)
+                {
+                    if (!distance.ContainsKey(friend) && distance[personToView] != distanceLevel)
+                    {
+                        distance[friend] = distance[personToView] + 1;
+                        queue.Enqueue(friend);
+                        result.Add(friend);
+                    }
+
+                }
+            }
+
+            return result;
         }
 
     }
